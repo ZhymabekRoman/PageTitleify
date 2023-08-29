@@ -1,4 +1,5 @@
 // Based on https://gist.github.com/inotnako/c4a82f6723f6ccea5d83c5d3689373dd
+// https://medium.com/@dave-jaydeep/golang-parse-extract-html-2599db904e7d
 
 package main
 
