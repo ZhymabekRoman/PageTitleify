@@ -67,7 +67,8 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 type HTMLMeta struct {
-	Title string `json:"title"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
 }
 
 func extract(resp io.Reader) *HTMLMeta {
@@ -79,14 +80,23 @@ func extract(resp io.Reader) *HTMLMeta {
 		switch tokenType {
 		case html.ErrorToken:
 			return hm
-		case html.StartTagToken:
+		case html.StartTagToken, html.SelfClosingTagToken:
 			token := tokenizer.Token()
 			if token.Data == "title" {
 				tokenType = tokenizer.Next()
 				if tokenType == html.TextToken {
 					token = tokenizer.Token()
 					hm.Title = token.Data
-					return hm
+				}
+			} else if token.Data == "meta" {
+				for _, attr := range token.Attr {
+					if attr.Key == "name" && attr.Val == "description" {
+						for _, attr := range token.Attr {
+							if attr.Key == "content" {
+								hm.Description = attr.Val
+							}
+						}
+					}
 				}
 			}
 		}
